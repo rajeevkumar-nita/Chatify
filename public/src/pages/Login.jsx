@@ -7,7 +7,7 @@ import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginRoute } from "../utils/APIRoutes";
-import backimage from '../assets/background.jpeg'
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
    align-items: center;
-  background: url(${backimage}) no-repeat center center fixed;
+  
   background-size: cover;
 `;
 
