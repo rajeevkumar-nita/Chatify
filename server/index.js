@@ -94,7 +94,7 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "https://chatify-wheat.vercel.app",  // your frontend domain
   credentials: true,
 }));
 app.use(express.json());
