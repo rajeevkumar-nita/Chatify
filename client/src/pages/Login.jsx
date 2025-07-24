@@ -62,7 +62,7 @@ export default function Login() {
         <Form onSubmit={handleSubmit}>
           <Brand>
             <img src={Logo} alt="logo" />
-            <h1>ConvoHub</h1>
+            <h1>Chatify</h1>
           </Brand>
           <Input
             type="text"
