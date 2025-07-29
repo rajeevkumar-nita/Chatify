@@ -93,26 +93,25 @@
 
 
 // src/pages/Chat.jsx
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import Contacts from "../components/Contacts";
-import Welcome from "../components/Welcome";
-import ChatContainer from "../components/ChatContainer";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import styled from "styled-components";
 import { allUsersRoute, host } from "../utils/APIRoutes";
-import axios from "axios";
+import ChatContainer from "../components/ChatContainer";
+import Contacts from "../components/Contacts";
+import Welcome from "../components/Welcome";
 
 export default function Chat() {
   const navigate = useNavigate();
-  const socket = React.useRef();
+  const socket = useRef();
   const [contacts, setContacts] = useState([]);
-  const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrentChat] = useState(undefined);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [currentUser, setCurrentUser] = useState(undefined);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    async function init() {
       if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
         navigate("/login");
       } else {
@@ -121,10 +120,9 @@ export default function Chat() {
             localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
           )
         );
-        setIsLoaded(true);
       }
-    };
-    fetchUser();
+    }
+    init();
   }, [navigate]);
 
   useEffect(() => {
@@ -135,15 +133,17 @@ export default function Chat() {
   }, [currentUser]);
 
   useEffect(() => {
-    const getContacts = async () => {
-      if (currentUser && currentUser.isAvatarImageSet) {
-        const { data } = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data);
-      } else {
-        navigate("/setAvatar");
+    async function fetchContacts() {
+      if (currentUser) {
+        if (currentUser.isAvatarImageSet) {
+          const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
+          setContacts(data.data);
+        } else {
+          navigate("/setAvatar");
+        }
       }
-    };
-    getContacts();
+    }
+    fetchContacts();
   }, [currentUser, navigate]);
 
   const handleChatChange = (chat) => {
@@ -152,15 +152,17 @@ export default function Chat() {
 
   return (
     <Container>
-      <div className="contacts-section">
-        <Contacts contacts={contacts} changeChat={handleChatChange} />
-      </div>
-      <div className="chat-section">
-        {isLoaded && currentChat === undefined ? (
-          <Welcome />
-        ) : (
-          <ChatContainer currentChat={currentChat} socket={socket} />
-        )}
+      <div className="main-container">
+        <div className="contacts-panel">
+          <Contacts contacts={contacts} changeChat={handleChatChange} />
+        </div>
+        <div className="chat-panel">
+          {currentChat === undefined ? (
+            <Welcome />
+          ) : (
+            <ChatContainer currentChat={currentChat} socket={socket} />
+          )}
+        </div>
       </div>
     </Container>
   );
@@ -169,23 +171,37 @@ export default function Chat() {
 const Container = styled.div`
   height: 100vh;
   width: 100vw;
-  display: grid;
-  grid-template-columns: 25% 75%;
-  @media screen and (max-width: 768px) {
-    grid-template-columns: 100%;
-    grid-template-rows: auto auto;
-    .contacts-section {
-      order: 2;
-    }
-    .chat-section {
-      order: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #131324;
+
+  .main-container {
+    height: 90vh;
+    width: 90vw;
+    display: grid;
+    grid-template-columns: 25% 75%;
+    background-color: #00000076;
+    border-radius: 1rem;
+    overflow: hidden;
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 100%;
+      grid-template-rows: 1fr 1fr;
     }
   }
-  .contacts-section {
+
+  .contacts-panel {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     overflow-y: auto;
     background-color: #1e1e2f;
+    @media screen and (max-width: 768px) {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
   }
-  .chat-section {
+
+  .chat-panel {
     overflow-y: auto;
     background-color: #0d0d30;
   }

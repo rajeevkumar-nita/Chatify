@@ -184,7 +184,6 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
@@ -210,17 +209,6 @@ export default function ChatContainer({ currentChat, socket }) {
       setMessages(response.data);
     }
     fetchMessages();
-  }, [currentChat]);
-
-  useEffect(() => {
-    const getCurrentChat = async () => {
-      if (currentChat) {
-        await JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        )._id;
-      }
-    };
-    getCurrentChat();
   }, [currentChat]);
 
   const handleSendMsg = async (msg) => {
@@ -296,16 +284,16 @@ export default function ChatContainer({ currentChat, socket }) {
 }
 
 const Container = styled.div`
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 0.2rem;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 
   .chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1rem;
     background-color: #1e1e2f;
     border-bottom: 1px solid #333;
 
@@ -317,23 +305,18 @@ const Container = styled.div`
       .avatar img {
         height: 2.5rem;
         border-radius: 50%;
-        @media screen and (max-width: 768px) {
-          height: 2rem;
-        }
       }
 
       .username h3 {
         color: white;
         font-size: 1.2rem;
-        @media screen and (max-width: 768px) {
-          font-size: 1rem;
-        }
       }
     }
   }
 
   .chat-messages {
-    padding: 1rem 1.5rem;
+    flex: 1;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -350,21 +333,14 @@ const Container = styled.div`
 
     .message {
       display: flex;
-      align-items: flex-end;
-
       .content {
-        max-width: 65%;
+        max-width: 75%;
         word-wrap: break-word;
         padding: 0.8rem 1rem;
         font-size: 1rem;
         border-radius: 1rem;
         color: #e1e1e1;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        @media screen and (max-width: 768px) {
-          max-width: 80%;
-          font-size: 0.95rem;
-          padding: 0.7rem;
-        }
       }
     }
 
@@ -382,6 +358,28 @@ const Container = styled.div`
         background-color: #9900ff25;
         border-top-left-radius: 0;
       }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .chat-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      .user-details .username h3 {
+        font-size: 1rem;
+      }
+
+      .user-details .avatar img {
+        height: 2rem;
+      }
+    }
+
+    .chat-messages .message .content {
+      max-width: 90%;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.9rem;
     }
   }
 `;
